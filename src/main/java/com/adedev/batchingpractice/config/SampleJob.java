@@ -1,5 +1,6 @@
 package com.adedev.batchingpractice.config;
 
+import com.adedev.batchingpractice.listener.FirstJobListener;
 import com.adedev.batchingpractice.service.FirstTasklet;
 import com.adedev.batchingpractice.service.SecondTasklet;
 import org.springframework.batch.core.Job;
@@ -14,18 +15,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 public class SampleJob {
-
     private final JobRepository jobRepository;
-
     private final PlatformTransactionManager transactionManager;
     private final FirstTasklet firstTasklet;
     private final SecondTasklet secondTasklet;
+    private final FirstJobListener firstJobListener;
 
-    public SampleJob(JobRepository jobRepository, PlatformTransactionManager transactionManager, FirstTasklet firstTasklet, SecondTasklet secondTasklet) {
+    public SampleJob(JobRepository jobRepository, PlatformTransactionManager transactionManager, FirstTasklet firstTasklet, SecondTasklet secondTasklet, FirstJobListener firstJobListener) {
         this.jobRepository = jobRepository;
         this.transactionManager = transactionManager;
         this.firstTasklet = firstTasklet;
         this.secondTasklet = secondTasklet;
+        this.firstJobListener = firstJobListener;
     }
 
 
@@ -34,6 +35,7 @@ public class SampleJob {
         return new JobBuilder("First Job", jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(firstStep())
+                .listener(firstJobListener)
                 .next(secondStep())
                 .build();
     }
