@@ -2,10 +2,9 @@ package com.adedev.batchingpractice.controller;
 
 import com.adedev.batchingpractice.request.JobParamsRequest;
 import com.adedev.batchingpractice.service.JobService;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.launch.JobExecutionNotRunningException;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +17,11 @@ import java.util.List;
 @RequestMapping("/api/job")
 public class JobController {
     private final JobService jobService;
+    private final JobOperator jobOperator;
 
-    public JobController(JobService jobService) {
+    public JobController(JobService jobService, JobOperator jobOperator) {
         this.jobService = jobService;
+        this.jobOperator = jobOperator;
     }
 
     @GetMapping("/start/{jobName}")
@@ -28,5 +29,12 @@ public class JobController {
         jobService.startJob(jobName, jobParams);
 
         return "Job Started...";
+    }
+
+    @GetMapping("/stop/{executionId}")
+    public String stopJob(@PathVariable long executionId) throws NoSuchJobExecutionException,
+            JobExecutionNotRunningException {
+        jobOperator.stop(executionId);
+        return "Job Stopped...";
     }
 }
