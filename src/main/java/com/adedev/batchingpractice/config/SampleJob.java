@@ -10,12 +10,18 @@ import com.adedev.batchingpractice.service.SecondTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import static com.adedev.batchingpractice.config.JobConstants.FIRST_JOB;
+import static com.adedev.batchingpractice.config.JobConstants.SECOND_JOB;
 
 @Configuration
 public class SampleJob {
@@ -42,9 +48,9 @@ public class SampleJob {
     }
 
 
-    //@Bean commented as not needed at the moment
+    @Bean
     public Job firstJob() {
-        return new JobBuilder("First Job", jobRepository)
+        return new JobBuilder(FIRST_JOB, jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(firstStep())
                 .listener(firstJobListener)
@@ -54,7 +60,7 @@ public class SampleJob {
 
     @Bean
     public Job secondJob() {
-        return new JobBuilder("Second Job", jobRepository)
+        return new JobBuilder(SECOND_JOB, jobRepository)
                 .incrementer(new RunIdIncrementer())
                 .start(firstChunkStep())
                 .next(secondStep())
