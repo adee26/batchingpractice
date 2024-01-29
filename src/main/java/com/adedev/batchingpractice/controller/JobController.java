@@ -1,5 +1,6 @@
 package com.adedev.batchingpractice.controller;
 
+import com.adedev.batchingpractice.request.JobParamsRequest;
 import com.adedev.batchingpractice.service.JobService;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -7,8 +8,11 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/job")
@@ -20,8 +24,8 @@ public class JobController {
     }
 
     @GetMapping("/start/{jobName}")
-    public String startJob(@PathVariable String jobName) {
-        jobService.startJob(jobName);
+    public String startJob(@PathVariable String jobName, @RequestBody List<JobParamsRequest> jobParams) {
+        jobService.startJob(jobName, jobParams);
 
         return "Job Started...";
     }
